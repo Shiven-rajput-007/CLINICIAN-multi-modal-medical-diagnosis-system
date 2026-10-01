@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: medical_assistant_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: medical_assistant
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d medical_assistant"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: medical_assistant_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgrespassword@postgres:5432/medical_assistant
+      JWT_SECRET_KEY: medical_assistant_production_docker_secret_key_849204928402
+      JWT_ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 120
+      MODEL_DEVICE: cpu
+      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,http://localhost:80,http://localhost
+      UPLOAD_DIR: backend/storage/uploads
+      GRADCAM_DIR: backend/storage/gradcam
+      MAX_UPLOAD_SIZE_MB: 15
+    ports:
+      - "8000:8000"
+    volumes:
+      - storage_data:/app/backend/storage
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: medical_assistant_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+volumes:
+  postgres_data:
+  storage_data:

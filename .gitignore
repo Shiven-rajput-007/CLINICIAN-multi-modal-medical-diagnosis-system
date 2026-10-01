@@ -1,0 +1,51 @@
+# Virtual Environments
+.venv/
+venv/
+ENV/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.production
+*.env
+
+# Node & Frontend Build
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Legacy Streamlit Backup
+frontend_streamlit_legacy/
+
+# Storage & Uploads (preserve directories)
+backend/storage/uploads/*
+!backend/storage/uploads/.gitkeep
+backend/storage/gradcam/*
+!backend/storage/gradcam/.gitkeep
+storage/uploads/*
+!storage/uploads/.gitkeep
+storage/gradcam/*
+!storage/gradcam/.gitkeep
+
+# SQLite database file
+data/app.db
+data/*.db
+
+# Redundant duplicate model copies (primary models remain in models/)
+backend/models_ml/chest_xray/*.pth
+backend/models_ml/brain_mri/*.pth
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

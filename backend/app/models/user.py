@@ -1,0 +1,29 @@
+from datetime import datetime, timezone
+from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.orm import relationship
+from backend.app.db.base import Base
+
+def utc_now():
+    return datetime.now(timezone.utc)
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    name = Column(String(120), nullable=False)
+    email = Column(String(255), unique=True, index=True, nullable=False)
+    password_hash = Column(String(255), nullable=False)
+    hospital_name = Column(String(200), nullable=False, default="General Hospital")
+    role = Column(String(50), nullable=False, default="doctor")
+    created_at = Column(DateTime(timezone=True), default=utc_now, nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False)
+
+    diagnoses = relationship(
+        "DiagnosisRecord",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        order_by="desc(DiagnosisRecord.created_at)"
+    )
+
+    def __repr__(self):
+        return f"<User(id={self.id}, email='{self.email}', role='{self.role}')>"
