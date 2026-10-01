@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Tuple, Optional
 from PIL import Image
 from fastapi import HTTPException, status
-from backend.app.core.config import settings
+from app.core.config import settings
 
 class FileService:
     @staticmethod

@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from fastapi import HTTPException, status
 
-from backend.app.models.diagnosis import DiagnosisRecord
-from backend.app.schemas.diagnosis import (
+from app.models.diagnosis import DiagnosisRecord
+from app.schemas.diagnosis import (
     DiagnosisInferResponse,
     DiagnosisRecordResponse,
     PaginatedHistoryResponse,
@@ -14,9 +14,9 @@ from backend.app.schemas.diagnosis import (
     RecentDiagnosisSummary,
     PredictionDetail
 )
-from backend.app.services.file_service import FileService
-from backend.app.ml.inference import run_diagnosis
-from backend.app.core.config import MODEL_METADATA
+from app.services.file_service import FileService
+from app.ml.inference import run_diagnosis
+from app.core.config import MODEL_METADATA
 
 logger = logging.getLogger("medical_assistant.services.diagnosis")
 

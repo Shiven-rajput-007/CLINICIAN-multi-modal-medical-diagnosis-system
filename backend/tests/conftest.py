@@ -14,10 +14,10 @@ PROJECT_ROOT = BACKEND_DIR.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(BACKEND_DIR))
 
-from backend.app.core.config import settings
-from backend.app.db.base import Base
-from backend.app.db.session import get_db
-from backend.app.main import app
+from app.core.config import settings
+from app.db.base import Base
+from app.db.session import get_db
+from app.main import app
 
 # In-memory SQLite database for testing
 TEST_DATABASE_URL = "sqlite:///:memory:"

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
-from backend.app.services.file_service import FileService
+from app.services.file_service import FileService
 
 router = APIRouter(prefix="/files", tags=["File Storage"])
 

@@ -2,13 +2,16 @@ import sys
 from pathlib import Path
 from fastapi.testclient import TestClient
 
-PROJECT_ROOT = Path(__file__).resolve().parent
+TEST_DIR = Path(__file__).resolve().parent
+BACKEND_DIR = TEST_DIR.parent
+PROJECT_ROOT = BACKEND_DIR.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+sys.path.insert(0, str(BACKEND_DIR))
 
-from backend.app.main import app
-from backend.app.db.session import SessionLocal
-from backend.app.models.user import User
-from backend.app.models.diagnosis import DiagnosisRecord
+from app.main import app
+from app.db.session import SessionLocal
+from app.models.user import User
+from app.models.diagnosis import DiagnosisRecord
 
 def run_e2e_verification():
     print("==================================================================")

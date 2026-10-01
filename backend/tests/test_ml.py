@@ -1,10 +1,10 @@
 import pytest
 import io
 from PIL import Image
-from backend.app.ml.model_loader import get_model_manager
-from backend.app.ml.preprocessing import preprocess_image
-from backend.app.ml.inference import run_diagnosis
-from backend.app.core.config import CHEST_XRAY_CLASSES, BRAIN_MRI_CLASSES
+from app.ml.model_loader import get_model_manager
+from app.ml.preprocessing import preprocess_image
+from app.ml.inference import run_diagnosis
+from app.core.config import CHEST_XRAY_CLASSES, BRAIN_MRI_CLASSES
 
 def generate_test_image(color=(128, 128, 128), size=(256, 256)) -> bytes:
     img = Image.new("RGB", size, color=color)

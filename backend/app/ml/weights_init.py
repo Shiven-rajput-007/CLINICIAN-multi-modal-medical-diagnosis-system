@@ -2,8 +2,8 @@ import logging
 from pathlib import Path
 from typing import Dict
 import torch
-from backend.app.core.config import PROJECT_ROOT, BACKEND_DIR, CHEST_XRAY_CLASSES, BRAIN_MRI_CLASSES
-from backend.app.ml.fusion import DenseNet121Medical, MultimodalFusionModel
+from app.core.config import PROJECT_ROOT, BACKEND_DIR, CHEST_XRAY_CLASSES, BRAIN_MRI_CLASSES
+from app.ml.fusion import DenseNet121Medical, MultimodalFusionModel
 
 logger = logging.getLogger("medical_assistant.weights")
 

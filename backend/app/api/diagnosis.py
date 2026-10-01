@@ -4,17 +4,17 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query, status
 from sqlalchemy.orm import Session
 
-from backend.app.core.dependencies import get_current_user
-from backend.app.core.config import MODEL_METADATA, settings
-from backend.app.db.session import get_db
-from backend.app.models.user import User
-from backend.app.schemas.diagnosis import (
+from app.core.dependencies import get_current_user
+from app.core.config import MODEL_METADATA, settings
+from app.db.session import get_db
+from app.models.user import User
+from app.schemas.diagnosis import (
     DiagnosisInferResponse,
     DiagnosisRecordResponse,
     PaginatedHistoryResponse,
     DashboardStatsResponse
 )
-from backend.app.services.diagnosis_service import DiagnosisService
+from app.services.diagnosis_service import DiagnosisService
 
 logger = logging.getLogger("medical_assistant.api.diagnosis")
 router = APIRouter(prefix="/diagnosis", tags=["Diagnosis & Multimodal Inference"])

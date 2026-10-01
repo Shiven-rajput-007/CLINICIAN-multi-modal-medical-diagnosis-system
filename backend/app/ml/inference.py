@@ -3,10 +3,10 @@ from typing import Dict, Any, Tuple
 from PIL import Image
 import torch
 
-from backend.app.core.config import MODEL_METADATA
-from backend.app.ml.preprocessing import preprocess_image
-from backend.app.ml.fusion import build_symptom_tensor
-from backend.app.ml.model_loader import get_model_manager
+from app.core.config import MODEL_METADATA
+from app.ml.preprocessing import preprocess_image
+from app.ml.fusion import build_symptom_tensor
+from app.ml.model_loader import get_model_manager
 
 logger = logging.getLogger("medical_assistant.inference")
 

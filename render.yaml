@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: clinician-medical-diagnosis-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu && pip install -r requirements.txt
+    startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.8
+      - key: MODEL_DEVICE
+        value: cpu
+      - key: DEBUG
+        value: "false"

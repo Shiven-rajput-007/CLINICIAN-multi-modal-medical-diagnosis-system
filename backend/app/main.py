@@ -1,13 +1,26 @@
+import sys
+from pathlib import Path
+
+# Ensure backend directory and project root are discoverable in sys.path
+_CURRENT_DIR = Path(__file__).resolve().parent      # backend/app
+_BACKEND_DIR = _CURRENT_DIR.parent                  # backend
+_PROJECT_ROOT = _BACKEND_DIR.parent                 # root
+
+for _p in [str(_BACKEND_DIR), str(_PROJECT_ROOT)]:
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
 import logging
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from backend.app.core.config import settings
-from backend.app.services.file_service import FileService
-from backend.app.ml.model_loader import get_model_manager
-from backend.app.api import (
+from app.core.config import settings
+from app.services.file_service import FileService
+from app.ml.model_loader import get_model_manager
+from app.api import (
     auth_router,
     diagnosis_router,
     files_router,
@@ -86,3 +99,10 @@ def root():
         "docs_url": "/docs",
         "api_prefix": "/api"
     }
+
+if __name__ == "__main__":
+    import uvicorn
+    host = settings.server_host
+    port = settings.server_port
+    logger.info(f"Starting server on {host}:{port}...")
+    uvicorn.run("app.main:app", host=host, port=port, reload=settings.DEBUG)

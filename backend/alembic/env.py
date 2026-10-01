@@ -12,9 +12,9 @@ PROJECT_ROOT = BASE_DIR.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(BASE_DIR))
 
-from backend.app.core.config import settings
-from backend.app.db.base import Base
-from backend.app.models import User, DiagnosisRecord
+from app.core.config import settings
+from app.db.base import Base
+from app.models import User, DiagnosisRecord
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

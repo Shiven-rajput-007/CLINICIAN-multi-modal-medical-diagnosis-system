@@ -30,7 +30,12 @@ class Settings(BaseSettings):
     @property
     def resolved_database_url(self) -> str:
         url = self.DATABASE_URL
-        if url.startswith("sqlite:///") and not url.startswith("sqlite:////"):
+        # Normalize postgres driver for SQLAlchemy 2.0 with psycopg v3 (Render standard)
+        if url.startswith("postgres://"):
+            url = "postgresql+psycopg://" + url[len("postgres://"):]
+        elif url.startswith("postgresql://") and not url.startswith("postgresql+"):
+            url = "postgresql+psycopg://" + url[len("postgresql://"):]
+        elif url.startswith("sqlite:///") and not url.startswith("sqlite:////"):
             path_part = url[len("sqlite:///"):]
             if path_part != ":memory:":
                 # Resolve relative paths relative to PROJECT_ROOT
@@ -40,10 +45,20 @@ class Settings(BaseSettings):
                 return f"sqlite:///{p.as_posix()}"
         return url
 
-    # Server Configuration
-    BACKEND_HOST: str = "127.0.0.1"
+    # Server Configuration (Binds to 0.0.0.0 and picks up Render's $PORT)
+    HOST: Optional[str] = None
+    PORT: Optional[int] = None
+    BACKEND_HOST: str = "0.0.0.0"
     BACKEND_PORT: int = 8000
     CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000"
+
+    @property
+    def server_host(self) -> str:
+        return self.HOST or self.BACKEND_HOST or "0.0.0.0"
+
+    @property
+    def server_port(self) -> int:
+        return self.PORT or self.BACKEND_PORT or 8000
 
     # Storage paths
     STORAGE_DIR: Path = BACKEND_DIR / "storage"

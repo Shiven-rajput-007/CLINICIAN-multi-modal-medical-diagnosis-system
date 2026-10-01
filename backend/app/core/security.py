@@ -2,7 +2,7 @@ import bcrypt
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict, Any
 import jwt
-from backend.app.core.config import settings
+from app.core.config import settings
 
 def get_password_hash(password: str) -> str:
     """Hashes a plain-text password using direct bcrypt with salt."""

@@ -3,10 +3,10 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 
-from backend.app.core.config import settings, MODEL_METADATA
-from backend.app.db.session import get_db
-from backend.app.ml.model_loader import get_model_manager
-from backend.app.schemas.common import HealthResponse
+from app.core.config import settings, MODEL_METADATA
+from app.db.session import get_db
+from app.ml.model_loader import get_model_manager
+from app.schemas.common import HealthResponse
 
 logger = logging.getLogger("medical_assistant.api.health")
 router = APIRouter(tags=["System Health"])

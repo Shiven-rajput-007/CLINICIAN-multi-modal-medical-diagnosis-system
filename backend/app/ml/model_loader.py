@@ -4,10 +4,10 @@ from typing import Dict, Any, Optional
 import torch
 import torch.nn as nn
 
-from backend.app.core.config import settings, PROJECT_ROOT, BACKEND_DIR, CHEST_XRAY_CLASSES, BRAIN_MRI_CLASSES
-from backend.app.ml.fusion import DenseNet121Medical, MultimodalFusionModel
-from backend.app.ml.gradcam import GradCAM
-from backend.app.ml.weights_init import initialize_weights_if_missing
+from app.core.config import settings, PROJECT_ROOT, BACKEND_DIR, CHEST_XRAY_CLASSES, BRAIN_MRI_CLASSES
+from app.ml.fusion import DenseNet121Medical, MultimodalFusionModel
+from app.ml.gradcam import GradCAM
+from app.ml.weights_init import initialize_weights_if_missing
 
 logger = logging.getLogger("medical_assistant.model_loader")
 

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
-from backend.app.schemas.user import UserResponse
+from app.schemas.user import UserResponse
 
 class UserRegister(BaseModel):
     name: str = Field(..., min_length=2, max_length=120, description="Full name of clinician")

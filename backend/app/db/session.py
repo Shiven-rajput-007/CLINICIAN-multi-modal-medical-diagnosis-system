@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Generator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
-from backend.app.core.config import settings
+from app.core.config import settings
 
 logger = logging.getLogger("medical_assistant.db")
 

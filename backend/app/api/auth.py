@@ -2,12 +2,12 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from backend.app.core.security import get_password_hash, verify_password, create_access_token
-from backend.app.core.dependencies import get_current_user
-from backend.app.db.session import get_db
-from backend.app.models.user import User
-from backend.app.schemas.auth import UserRegister, UserLogin, TokenResponse
-from backend.app.schemas.user import UserResponse
+from app.core.security import get_password_hash, verify_password, create_access_token
+from app.core.dependencies import get_current_user
+from app.db.session import get_db
+from app.models.user import User
+from app.schemas.auth import UserRegister, UserLogin, TokenResponse
+from app.schemas.user import UserResponse
 
 logger = logging.getLogger("medical_assistant.api.auth")
 router = APIRouter(prefix="/auth", tags=["Authentication"])
