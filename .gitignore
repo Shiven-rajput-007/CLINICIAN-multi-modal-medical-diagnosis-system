@@ -40,10 +40,6 @@ storage/gradcam/*
 data/app.db
 data/*.db
 
-# Redundant duplicate model copies (primary models remain in models/)
-backend/models_ml/chest_xray/*.pth
-backend/models_ml/brain_mri/*.pth
-
 # IDE & OS
 .vscode/
 .idea/

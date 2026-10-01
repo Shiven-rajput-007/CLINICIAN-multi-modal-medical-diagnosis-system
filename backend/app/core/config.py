@@ -24,12 +24,28 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 120
 
-    # Database: Primary is PostgreSQL; SQLite supported as local fallback
-    DATABASE_URL: str = f"sqlite:///{(PROJECT_ROOT / 'data' / 'app.db').as_posix()}"
+    # Database: Primary is PostgreSQL; SQLite supported ONLY as local development fallback
+    DATABASE_URL: Optional[str] = None
+
+    @property
+    def is_production(self) -> bool:
+        env = (self.ENVIRONMENT or "").lower().strip()
+        return env in ("production", "prod") or bool(os.getenv("RENDER"))
 
     @property
     def resolved_database_url(self) -> str:
         url = self.DATABASE_URL
+        if self.is_production:
+            if not url or url.startswith("sqlite"):
+                raise RuntimeError(
+                    "Production configuration error: DATABASE_URL environment variable must be set to a valid "
+                    "PostgreSQL connection string (e.g. postgresql+psycopg://user:pass@host/dbname). "
+                    "SQLite fallback is strictly forbidden in production."
+                )
+        else:
+            if not url:
+                url = f"sqlite:///{(PROJECT_ROOT / 'data' / 'app.db').as_posix()}"
+
         # Normalize postgres driver for SQLAlchemy 2.0 with psycopg v3 (Render standard)
         if url.startswith("postgres://"):
             url = "postgresql+psycopg://" + url[len("postgres://"):]
@@ -69,15 +85,18 @@ class Settings(BaseSettings):
     # Compute Device ('cpu', 'cuda', 'auto')
     MODEL_DEVICE: str = "cpu"
 
-    # ML Checkpoint Paths
-    CHEST_IMAGE_MODEL_PATH: Optional[str] = str(PROJECT_ROOT / "models" / "chest_xray" / "densenet121_chest.pth")
-    CHEST_FUSION_MODEL_PATH: Optional[str] = str(PROJECT_ROOT / "models" / "chest_xray" / "fusion_chest.pth")
-    BRAIN_IMAGE_MODEL_PATH: Optional[str] = str(PROJECT_ROOT / "models" / "brain_mri" / "densenet121_brain.pth")
-    BRAIN_FUSION_MODEL_PATH: Optional[str] = str(PROJECT_ROOT / "models" / "brain_mri" / "fusion_brain.pth")
+    # ML Checkpoint Base Directory and specific paths
+    MODEL_BASE_DIR: Optional[str] = None
+    CHEST_IMAGE_MODEL_PATH: Optional[str] = None
+    CHEST_FUSION_MODEL_PATH: Optional[str] = None
+    BRAIN_IMAGE_MODEL_PATH: Optional[str] = None
+    BRAIN_FUSION_MODEL_PATH: Optional[str] = None
 
     @property
     def cors_origins_list(self) -> List[str]:
-        return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
+        if not self.CORS_ORIGINS:
+            return ["http://localhost:5173", "http://127.0.0.1:5173"] if not self.is_production else []
+        return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip() and origin.strip() != "*"]
 
 settings = Settings()
 

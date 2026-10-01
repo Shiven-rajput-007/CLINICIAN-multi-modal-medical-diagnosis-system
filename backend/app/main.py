@@ -40,19 +40,43 @@ async def lifespan(app: FastAPI):
     """
     Application lifecycle manager:
     1. Prepares local secure file storage
-    2. Pre-warms resident PyTorch DenseNet-121 and Late-Fusion models
+    2. Verifies database connectivity (enforces PostgreSQL in production)
+    3. Verifies trained PyTorch checkpoints exist on disk without pre-warming
+       (Memory-conscious lazy loading enabled for 512 MiB RAM environments)
     """
     logger.info("Initializing Multi-Modal Medical Diagnosis Assistant backend...")
     FileService.initialize_storage()
 
+    # 1. Database connectivity validation
+    try:
+        from app.db.session import engine
+        from sqlalchemy import text
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        logger.info(f"Database connectivity verified (is_production={settings.is_production}).")
+    except Exception as e:
+        if settings.is_production:
+            logger.critical(f"FATAL: Database connectivity check failed in production: {e}")
+            raise
+        logger.warning(f"Database connectivity check warning (local dev): {e}")
+
+    # 2. Checkpoint validation (executes in <2ms, allocates 0 MB RAM)
     try:
         manager = get_model_manager()
-        logger.info(f"PyTorch diagnostic models successfully pre-warmed on device: {manager.device}")
+        manager.verify_checkpoints_exist(raise_error=True)
+        logger.info(f"All required PyTorch checkpoints verified on disk. Lazy-loading on device: {manager.device}")
     except Exception as e:
-        logger.error(f"Error pre-loading PyTorch models: {e}", exc_info=True)
+        logger.critical(f"FATAL: Checkpoint verification failed on startup: {e}")
+        raise
 
     yield
 
+    # Clean up any resident models on shutdown
+    try:
+        manager = get_model_manager()
+        manager.unload_active_modality()
+    except Exception:
+        pass
     logger.info("Shutting down Multi-Modal Medical Diagnosis Assistant backend.")
 
 app = FastAPI(
@@ -87,7 +111,11 @@ app.include_router(files_router, prefix="/api")
 app.include_router(users_router, prefix="/api")
 app.include_router(health_router, prefix="/api")
 
-# Also register health check at root /health for docker/load balancer probes
+# Also register routes without /api prefix for root and legacy URL compatibility
+app.include_router(auth_router)
+app.include_router(diagnosis_router)
+app.include_router(files_router)
+app.include_router(users_router)
 app.include_router(health_router)
 
 @app.get("/")

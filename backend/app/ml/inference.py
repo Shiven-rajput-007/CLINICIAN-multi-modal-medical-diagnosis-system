@@ -34,19 +34,15 @@ def run_diagnosis(
     # 1. Preprocess Image
     input_tensor, pil_image = preprocess_image(image_bytes, target_size=meta["image_size"])
 
-    # 2. Retrieve resident models
+    # 2. Retrieve lazy-loaded modality bundle
     manager = get_model_manager()
     device = manager.device
     input_tensor = input_tensor.to(device)
 
-    if modality == "chest_xray":
-        image_model = manager.chest_image_model
-        fusion_model = manager.chest_fusion_model
-        gradcam = manager.chest_gradcam
-    else:
-        image_model = manager.brain_image_model
-        fusion_model = manager.brain_fusion_model
-        gradcam = manager.brain_gradcam
+    bundle = manager.get_modality_bundle(modality)
+    image_model = bundle["image_model"]
+    fusion_model = bundle["fusion_model"]
+    gradcam = bundle["gradcam"]
 
     # 3. Prepare symptom tensor
     symptom_tensor = build_symptom_tensor(symptoms_dict, symptom_order, device)
