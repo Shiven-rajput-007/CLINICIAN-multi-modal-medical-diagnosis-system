@@ -51,9 +51,9 @@ class GradCAM:
 
         score = logits[0, target_class_idx]
 
-        # Backward pass to get gradients
+        # Backward pass to get gradients - do NOT retain graph to free activation tensors immediately
         self.model.zero_grad()
-        score.backward(retain_graph=True)
+        score.backward(retain_graph=False)
 
         if self.gradients is None or self.activations is None:
             raise RuntimeError("Grad-CAM hooks failed to capture gradients or activations.")
@@ -76,6 +76,12 @@ class GradCAM:
             cam = torch.zeros_like(cam)
 
         heatmap = cam.squeeze().cpu().detach().numpy()
+
+        # Free hook references and zero gradients to prevent memory retention
+        self.gradients = None
+        self.activations = None
+        self.model.zero_grad()
+
         return heatmap, target_class_idx
 
     def overlay_on_image(
@@ -114,6 +120,13 @@ class GradCAM:
 
         return Image.fromarray(blended)
 
+    def overlay_to_base64(self, overlay_image: Image.Image) -> str:
+        """Encodes an overlay PIL image to a Base64 PNG data URL without recomputing Grad-CAM."""
+        buffer = io.BytesIO()
+        overlay_image.save(buffer, format="PNG", optimize=True)
+        encoded = base64.b64encode(buffer.getvalue()).decode("utf-8")
+        return f"data:image/png;base64,{encoded}"
+
     def generate_base64_overlay(
         self,
         input_tensor: torch.Tensor,
@@ -126,11 +139,7 @@ class GradCAM:
         """
         heatmap, _ = self.generate_heatmap(input_tensor, target_class_idx)
         overlay_pil = self.overlay_on_image(heatmap, original_image, alpha=alpha)
-
-        buffer = io.BytesIO()
-        overlay_pil.save(buffer, format="PNG", optimize=True)
-        encoded = base64.b64encode(buffer.getvalue()).decode("utf-8")
-        return f"data:image/png;base64,{encoded}"
+        return self.overlay_to_base64(overlay_pil)
 
     def remove_hooks(self):
         for hook in self.hooks:

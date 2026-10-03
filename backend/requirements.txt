@@ -1,3 +1,4 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
 fastapi>=0.110.0
 uvicorn[standard]>=0.28.0
 sqlalchemy>=2.0.25
@@ -9,8 +10,8 @@ email-validator>=2.0.0
 python-multipart>=0.0.9
 pyjwt>=2.8.0
 bcrypt>=4.1.2
-torch>=2.2.0
-torchvision>=0.17.0
+torch==2.14.1+cpu
+torchvision==0.29.1+cpu
 pillow>=10.2.0
 numpy>=1.26.0
 matplotlib>=3.8.0
